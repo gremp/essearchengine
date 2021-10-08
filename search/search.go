@@ -1,6 +1,8 @@
 package search
 
 import (
+	"context"
+
 	"github.com/gremp/essearchengine/helpers"
 )
 
@@ -62,4 +64,14 @@ func (this *Search) Facets(field string, facetOptions FacetOptions) *Search {
 	return this
 }
 
+func (this *Search) Do(ctx context.Context, target interface{}) (*helpers.ResultMeta, error) {
+	if err := helpers.ValidateOptions(this.engineName, this.url, this.apiKey); err != nil {
+		return nil, err
+	}
 
+	if err := helpers.CheckPointer(target); err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}

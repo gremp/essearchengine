@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 )
+
 var ErrGotHttpRequestError = errors.New("got http request error")
 
 func DoEngineRequest(ctx context.Context, url, apiKey, method string, payload []byte) (*http.Response, error) {
@@ -21,14 +22,15 @@ func DoEngineRequest(ctx context.Context, url, apiKey, method string, payload []
 
 	client := http.DefaultClient
 
-	response, err :=  client.Do(req)
+	response, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
 	if response.StatusCode >= 400 {
+		defer response.Body.Close()
 		data, _ := io.ReadAll(response.Body)
-		err := fmt.Errorf("%w with status: %d, body response was : %s", ErrGotHttpRequestError, response.StatusCode, string(data))
+		err = fmt.Errorf("%w with status: %d, body response was : %s", ErrGotHttpRequestError, response.StatusCode, string(data))
 
 		return nil, err
 	}
@@ -37,6 +39,6 @@ func DoEngineRequest(ctx context.Context, url, apiKey, method string, payload []
 }
 
 func BuildURL(baseURL, engineName, endpoint string) string {
-	urlTemplate :="%s/api/as/v1/engines/%s/%s"
+	urlTemplate := "%s/api/as/v1/engines/%s/%s"
 	return fmt.Sprintf(urlTemplate, baseURL, engineName, endpoint)
 }
