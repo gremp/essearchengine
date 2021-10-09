@@ -7,10 +7,10 @@ type PageObj struct {
 
 type ResultMeta struct {
 	Page struct {
-		Current int `json:"current"`
-		TotalPages int `json:"total_pages"`
+		Current      int `json:"current"`
+		TotalPages   int `json:"total_pages"`
 		TotalResults int `json:"total_results"`
-		Size int `json:"size"`
+		Size         int `json:"size"`
 	} `json:"page"`
 }
 
@@ -20,3 +20,6 @@ type GenericSearchResponse struct {
 	Results interface{} `json:"results,omitempty"`
 }
 
+type EngineErrorResponse struct {
+	Errors []string `json:"errors,omitempty"`
+}

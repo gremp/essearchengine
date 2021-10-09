@@ -125,7 +125,15 @@ func (this *Documents) sendRequest(ctx context.Context, documents interface{}, m
 		return nil, err
 	}
 
-	return helpers.DoEngineRequest(ctx, url, this.apiKey, method, payload)
+	response, err := helpers.DoEngineRequest(ctx, url, this.apiKey, method, payload)
+	if response.StatusCode >= 400 {
+		defer response.Body.Close()
+		data, _ := io.ReadAll(response.Body)
+		err = fmt.Errorf("%w with status: %d, body response was : %s", helpers.ErrGotHttpRequestError, response.StatusCode, string(data))
+
+		return nil, err
+	}
+	return response, nil
 }
 
 func (this *Documents) filterDeleteErrors(body io.ReadCloser) (unableToDeleteIDs []string, requestError error) {

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gremp/essearchengine/helpers"
 )
@@ -112,10 +113,28 @@ func (this *SourceEngines) sendRequest(ctx context.Context, payload interface{},
 		url = fmt.Sprintf("%s/%s", url, overideEndpoint[0])
 	}
 
-	payloadString, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
 
-	return helpers.DoEngineRequest(ctx, url, this.apiKey, method, payloadString)
+	response, err := helpers.DoEngineRequest(ctx, url, this.apiKey, method, payloadBytes)
+	if response.StatusCode >= 400 {
+		defer response.Body.Close()
+		errorResponse := &helpers.EngineErrorResponse{}
+
+		err = json.NewDecoder(response.Body).Decode(errorResponse)
+		if err != nil {
+			return nil, err
+		}
+
+		if helpers.IsStringInSplice(errorResponse.Errors, "Could not find engine.") {
+			return nil, nil
+		}
+
+		err = fmt.Errorf("%w with status: %d, body response was : %s", helpers.ErrGotHttpRequestError, response.StatusCode, strings.Join(errorResponse.Errors, ", "))
+
+		return nil, err
+	}
+	return response, nil
 }

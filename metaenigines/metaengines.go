@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/gremp/essearchengine/helpers"
@@ -102,10 +103,18 @@ func (this *MetaEngines) sendRequest(ctx context.Context, payload interface{}, m
 		url = fmt.Sprintf("%s/%s", url, overideEndpoint[0])
 	}
 
-	payloadString, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
 
-	return helpers.DoEngineRequest(ctx, url, this.apiKey, method, payloadString)
+	response, err := helpers.DoEngineRequest(ctx, url, this.apiKey, method, payloadBytes)
+	if response.StatusCode >= 400 {
+		defer response.Body.Close()
+		data, _ := io.ReadAll(response.Body)
+		err = fmt.Errorf("%w with status: %d, body response was : %s", helpers.ErrGotHttpRequestError, response.StatusCode, string(data))
+
+		return nil, err
+	}
+	return response, nil
 }

@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 )
 
@@ -22,20 +21,7 @@ func DoEngineRequest(ctx context.Context, url, apiKey, method string, payload []
 
 	client := http.DefaultClient
 
-	response, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	if response.StatusCode >= 400 {
-		defer response.Body.Close()
-		data, _ := io.ReadAll(response.Body)
-		err = fmt.Errorf("%w with status: %d, body response was : %s", ErrGotHttpRequestError, response.StatusCode, string(data))
-
-		return nil, err
-	}
-
-	return response, nil
+	return client.Do(req)
 }
 
 func BuildURL(baseURL, engineName, endpoint string) string {
