@@ -56,7 +56,7 @@ func Init(url, defaultEngineName, apiKey string) *AppSearch {
 // API used https://www.elastic.co/guide/en/app-search/7.15/documents.html
 // Options is an object that can be passed to overide the default configuration of engine name api key and url.
 // Only the 1st Option object is used
-func (this *AppSearch) Documents(options ...OverideOptions) *documents.Documents {
+func (this *AppSearch) Documents(options ...*OverideOptions) *documents.Documents {
 	engineName, url, apiKey := this.getOptions(options...)
 
 	return documents.New(engineName, apiKey, url)
@@ -66,7 +66,7 @@ func (this *AppSearch) Documents(options ...OverideOptions) *documents.Documents
 // API used https://www.elastic.co/guide/en/app-search/7.15/search.html
 // Options is an object that can be passed to overide the default configuration of engine name api key and url.
 // Only the 1st Option object is used
-func (this *AppSearch) Search(options ...OverideOptions) *search.Search {
+func (this *AppSearch) Search(options ...*OverideOptions) *search.Search {
 	engineName, url, apiKey := this.getOptions(options...)
 
 	return search.New(engineName, apiKey, url)
@@ -76,7 +76,7 @@ func (this *AppSearch) Search(options ...OverideOptions) *search.Search {
 // API used https://www.elastic.co/guide/en/app-search/7.15/meta-engines.html
 // Options is an object that can be passed to overide the default configuration of api key and url.
 // Only the 1st Option object is used
-func (this *AppSearch) MetaEngines(options ...OverideOptions) *metaenigines.MetaEngines {
+func (this *AppSearch) MetaEngines(options ...*OverideOptions) *metaenigines.MetaEngines {
 	engineName, url, apiKey := this.getOptions(options...)
 
 	return metaenigines.New(engineName, apiKey, url)
@@ -86,7 +86,7 @@ func (this *AppSearch) MetaEngines(options ...OverideOptions) *metaenigines.Meta
 // API used https://www.elastic.co/guide/en/app-search/7.15/engines.html
 // Options is an object that can be passed to overide the default configuration of api key and url.
 // Only the 1st Option object is used
-func (this *AppSearch) SourceEngines(options ...OverideOptions) *sourceengines.SourceEngines {
+func (this *AppSearch) SourceEngines(options ...*OverideOptions) *sourceengines.SourceEngines {
 	engineName, url, apiKey := this.getOptions(options...)
 
 	return sourceengines.New(engineName, apiKey, url)
@@ -96,7 +96,7 @@ func (this *AppSearch) SourceEngines(options ...OverideOptions) *sourceengines.S
 // API used https://www.elastic.co/guide/en/app-search/7.15/schema.html
 // Options is an object that can be passed to overide the default configuration of api key and url.
 // Only the 1st Option object is used
-func (this *AppSearch) Schema(options ...OverideOptions) *schema.Schema {
+func (this *AppSearch) Schema(options ...*OverideOptions) *schema.Schema {
 	engineName, url, apiKey := this.getOptions(options...)
 
 	return schema.New(engineName, apiKey, url)
@@ -106,13 +106,13 @@ func (this *AppSearch) Schema(options ...OverideOptions) *schema.Schema {
 // API used https://www.elastic.co/guide/en/app-search/7.15/search-settings.html
 // Options is an object that can be passed to overide the default configuration of api key and url.
 // Only the 1st Option object is used
-func (this *AppSearch) SearchSettings(options ...OverideOptions) *searchsettings.SearchSettings {
+func (this *AppSearch) SearchSettings(options ...*OverideOptions) *searchsettings.SearchSettings {
 	engineName, url, apiKey := this.getOptions(options...)
 
 	return searchsettings.New(engineName, apiKey, url)
 }
 
-func (this *AppSearch) getOptions(options ...OverideOptions) (engineName, url, apiKey string) {
+func (this *AppSearch) getOptions(options ...*OverideOptions) (engineName, url, apiKey string) {
 	engineName = this.defaultEngineName
 	url = this.url
 	apiKey = this.apiKey
