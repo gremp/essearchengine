@@ -3,11 +3,16 @@ package sourceengines
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gremp/essearchengine/helpers"
+)
+
+var (
+	ErrCouldNotFindEngine = errors.New("Could not find engine.")
 )
 
 type SourceEngines struct {
@@ -128,8 +133,8 @@ func (this *SourceEngines) sendRequest(ctx context.Context, payload interface{},
 			return nil, err
 		}
 
-		if helpers.IsStringInSplice(errorResponse.Errors, "Could not find engine.") {
-			return nil, nil
+		if helpers.IsStringInSplice(errorResponse.Errors, ErrCouldNotFindEngine.Error()) {
+			return nil, ErrCouldNotFindEngine
 		}
 
 		err = fmt.Errorf("%w with status: %d, body response was : %s", helpers.ErrGotHttpRequestError, response.StatusCode, strings.Join(errorResponse.Errors, ", "))
