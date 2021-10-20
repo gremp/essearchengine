@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	ErrEngineDoesNotExist = errors.New("engine does not exist")
+	ErrEngineDoesNotExist = errors.New("Could not find engine.")
 )
 
 type MetaEngines struct {
@@ -125,7 +125,6 @@ func (this *MetaEngines) sendRequest(ctx context.Context, payload interface{}, m
 		if helpers.IsStringInSplice(errorResponse.Errors, ErrEngineDoesNotExist.Error()) {
 			return nil, ErrEngineDoesNotExist
 		}
-
 
 		err = fmt.Errorf("%w with status: %d, body response was : %s", helpers.ErrGotHttpRequestError, response.StatusCode, strings.Join(errorResponse.Errors, ", "))
 
