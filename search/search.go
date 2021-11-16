@@ -2,7 +2,6 @@ package search
 
 import (
 	"context"
-
 	"github.com/gremp/essearchengine/helpers"
 )
 
@@ -10,31 +9,26 @@ type Search struct {
 	engineName     string
 	apiKey         string
 	url            string
-	requestOptions struct {
-		query  string
-		page   *helpers.PageObj
-		sort   []map[string]SortDirection
-		Group  *GroupOptions
-		Facets FacetObject
-	}
+	requestOptions *RequestOptions
 }
 
 func New(engineName, apiKey, url string) *Search {
 	return &Search{
-		engineName: engineName,
-		apiKey:     apiKey,
-		url:        url,
+		engineName:     engineName,
+		apiKey:         apiKey,
+		url:            url,
+		requestOptions: &RequestOptions{},
 	}
 }
 
 func (this *Search) Query(query string) *Search {
-	this.requestOptions.query = query
+	this.requestOptions.Query = query
 
 	return this
 }
 
 func (this *Search) Page(current, size int) *Search {
-	this.requestOptions.page = &helpers.PageObj{
+	this.requestOptions.Page = &helpers.PageObj{
 		Current: current,
 		Size:    size,
 	}
@@ -43,10 +37,10 @@ func (this *Search) Page(current, size int) *Search {
 }
 
 func (this *Search) Sort(sortField string, sortDirection SortDirection) *Search {
-	if this.requestOptions.sort == nil {
-		this.requestOptions.sort = make([]map[string]SortDirection, 0)
+	if this.requestOptions.Sort == nil {
+		this.requestOptions.Sort = make([]map[string]SortDirection, 0)
 	}
-	this.requestOptions.sort = append(this.requestOptions.sort, map[string]SortDirection{sortField: sortDirection})
+	this.requestOptions.Sort = append(this.requestOptions.Sort, map[string]SortDirection{sortField: sortDirection})
 	return this
 }
 
@@ -73,5 +67,16 @@ func (this *Search) Do(ctx context.Context, target interface{}) (*helpers.Result
 		return nil, err
 	}
 
+	//payloadBytes, err := json.Marshal(payload)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//response, err := helpers.DoEngineRequest(ctx, url, this.apiKey, method, payloadBytes)
+
 	return nil, nil
+}
+
+func (this *Search) GetRequestOptions() *RequestOptions {
+	return this.requestOptions
 }

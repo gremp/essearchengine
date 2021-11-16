@@ -23,3 +23,23 @@ type GenericSearchResponse struct {
 type EngineErrorResponse struct {
 	Errors []string `json:"errors,omitempty"`
 }
+
+type SearchFields map[string]*SingleFieldSettings
+type ResultsFields map[string]*SingleResultSettings
+
+type SingleFieldSettings struct {
+	Weight int `json:"weight"`
+}
+
+type SingleResultSettings struct {
+	Raw     *SingleResultSettingsRaw     `json:"raw,omitempty"`
+	Snippet *SingleResultSettingsSnippet `json:"snippet,omitempty"`
+}
+
+type SingleResultSettingsRaw struct {
+	Size int `json:"size,omitempty"`
+}
+type SingleResultSettingsSnippet struct {
+	Size     int  `json:"size"`
+	Fallback bool `json:"fallback,omitempty"`
+}
