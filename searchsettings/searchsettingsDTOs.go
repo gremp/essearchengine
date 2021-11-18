@@ -1,12 +1,15 @@
 package searchsettings
 
-import "github.com/gremp/essearchengine/helpers"
+import (
+	"github.com/gremp/essearchengine/generators/resultfieldgenerators"
+	"github.com/gremp/essearchengine/generators/searchffieldgenerators"
+)
 
 type SearchSettingsConfig struct {
-	SearchFields helpers.SearchFields           `json:"search_fields"`
-	ResultFields helpers.ResultsFields          `json:"result_fields"`
-	Precision    int                            `json:"precision"`
-	Boosts       map[string]SearchSettingsBoost `json:"boosts"`
+	SearchFields searchffieldgenerators.SearchFields `json:"search_fields"`
+	ResultFields resultfieldgenerators.ResultsFields `json:"result_fields"`
+	Precision    int                                 `json:"precision"`
+	Boosts       map[string]SearchSettingsBoost      `json:"boosts"`
 }
 
 type SearchSettingsBoost struct {

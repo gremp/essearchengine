@@ -3,16 +3,9 @@ package metaenigines
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"net/http"
-	"strings"
-
 	"github.com/gremp/essearchengine/helpers"
-)
-
-var (
-	ErrEngineDoesNotExist = errors.New("Could not find engine.")
+	"net/http"
 )
 
 type MetaEngines struct {
@@ -21,11 +14,10 @@ type MetaEngines struct {
 	url        string
 }
 
-func New(engineName, apiKey, url string) *MetaEngines {
+func New(apiKey, url string) *MetaEngines {
 	return &MetaEngines{
-		engineName: engineName,
-		apiKey:     apiKey,
-		url:        url,
+		apiKey: apiKey,
+		url:    url,
 	}
 }
 
@@ -112,23 +104,5 @@ func (this *MetaEngines) sendRequest(ctx context.Context, payload interface{}, m
 		return nil, err
 	}
 
-	response, err := helpers.DoEngineRequest(ctx, url, this.apiKey, method, payloadBytes)
-	if response.StatusCode >= 400 {
-		defer response.Body.Close()
-		errorResponse := &helpers.EngineErrorResponse{}
-
-		err = json.NewDecoder(response.Body).Decode(errorResponse)
-		if err != nil {
-			return nil, err
-		}
-
-		if helpers.IsStringInSplice(errorResponse.Errors, ErrEngineDoesNotExist.Error()) {
-			return nil, ErrEngineDoesNotExist
-		}
-
-		err = fmt.Errorf("%w with status: %d, body response was : %s", helpers.ErrGotHttpRequestError, response.StatusCode, strings.Join(errorResponse.Errors, ", "))
-
-		return nil, err
-	}
-	return response, nil
+	return helpers.DoEngineRequest(ctx, url, this.apiKey, method, payloadBytes)
 }

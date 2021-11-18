@@ -3,17 +3,9 @@ package sourceengines
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"net/http"
-	"strings"
-
 	"github.com/gremp/essearchengine/helpers"
-)
-
-var (
-	ErrCouldNotFindEngine  = errors.New("Could not find engine.")
-	ErrEngineAlreadyExists = errors.New("Name is already taken")
+	"net/http"
 )
 
 type SourceEngines struct {
@@ -22,11 +14,10 @@ type SourceEngines struct {
 	url        string
 }
 
-func New(engineName, apiKey, url string) *SourceEngines {
+func New(apiKey, url string) *SourceEngines {
 	return &SourceEngines{
-		engineName: engineName,
-		apiKey:     apiKey,
-		url:        url,
+		apiKey: apiKey,
+		url:    url,
 	}
 }
 
@@ -124,27 +115,6 @@ func (this *SourceEngines) sendRequest(ctx context.Context, payload interface{},
 		return nil, err
 	}
 
-	response, err := helpers.DoEngineRequest(ctx, url, this.apiKey, method, payloadBytes)
-	if response.StatusCode >= 400 {
-		defer response.Body.Close()
-		errorResponse := &helpers.EngineErrorResponse{}
+	return helpers.DoEngineRequest(ctx, url, this.apiKey, method, payloadBytes)
 
-		err = json.NewDecoder(response.Body).Decode(errorResponse)
-		if err != nil {
-			return nil, err
-		}
-
-		if helpers.IsStringInSplice(errorResponse.Errors, ErrCouldNotFindEngine.Error()) {
-			return nil, ErrCouldNotFindEngine
-		}
-
-		if helpers.IsStringInSplice(errorResponse.Errors, ErrEngineAlreadyExists.Error()) {
-			return nil, ErrEngineAlreadyExists
-		}
-
-		err = fmt.Errorf("%w with status: %d, body response was : %s", helpers.ErrGotHttpRequestError, response.StatusCode, strings.Join(errorResponse.Errors, ", "))
-
-		return nil, err
-	}
-	return response, nil
 }

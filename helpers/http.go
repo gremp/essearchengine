@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/gremp/essearchengine/apierrors"
 	"net/http"
 )
 
@@ -21,7 +22,17 @@ func DoEngineRequest(ctx context.Context, url, apiKey, method string, payload []
 
 	client := http.DefaultClient
 
-	return client.Do(req)
+	response, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode >= 400 {
+		defer response.Body.Close()
+		return nil, apierrors.GetError(response.Body)
+	}
+
+	return response, nil
 }
 
 func BuildURL(baseURL, engineName, endpoint string) string {

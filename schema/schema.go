@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/gremp/essearchengine/helpers"
@@ -66,13 +65,5 @@ func (this *Schema) sendRequest(ctx context.Context, payload interface{}, method
 		return nil, err
 	}
 
-	response, err := helpers.DoEngineRequest(ctx, url, this.apiKey, method, payloadBytes)
-	if response.StatusCode >= 400 {
-		defer response.Body.Close()
-		data, _ := io.ReadAll(response.Body)
-		err = fmt.Errorf("%w with status: %d, body response was : %s", helpers.ErrGotHttpRequestError, response.StatusCode, string(data))
-
-		return nil, err
-	}
-	return response, nil
+	return helpers.DoEngineRequest(ctx, url, this.apiKey, method, payloadBytes)
 }

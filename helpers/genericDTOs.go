@@ -1,5 +1,7 @@
 package helpers
 
+import "fmt"
+
 type PageObj struct {
 	Current int `json:"current,omitempty"`
 	Size    int `json:"size,omitempty"`
@@ -12,6 +14,7 @@ type ResultMeta struct {
 		TotalResults int `json:"total_results"`
 		Size         int `json:"size"`
 	} `json:"page"`
+	RequestID string `json:"request_id"`
 }
 
 type GenericSearchResponse struct {
@@ -20,26 +23,11 @@ type GenericSearchResponse struct {
 	Results interface{} `json:"results,omitempty"`
 }
 
-type EngineErrorResponse struct {
-	Errors []string `json:"errors,omitempty"`
+type GeoPoint struct {
+	Lat float64 `json:"lat"`
+	Lon float64 `json:"lon"`
 }
 
-type SearchFields map[string]*SingleFieldSettings
-type ResultsFields map[string]*SingleResultSettings
-
-type SingleFieldSettings struct {
-	Weight int `json:"weight"`
-}
-
-type SingleResultSettings struct {
-	Raw     *SingleResultSettingsRaw     `json:"raw,omitempty"`
-	Snippet *SingleResultSettingsSnippet `json:"snippet,omitempty"`
-}
-
-type SingleResultSettingsRaw struct {
-	Size int `json:"size,omitempty"`
-}
-type SingleResultSettingsSnippet struct {
-	Size     int  `json:"size"`
-	Fallback bool `json:"fallback,omitempty"`
+func (this *GeoPoint) GetStr() string {
+	return fmt.Sprintf("%f, %f", this.Lat, this.Lon)
 }
